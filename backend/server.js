@@ -9,6 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const checkoutRoutes = require("./routes/checkoutRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 dotenv.config();
 
@@ -24,7 +25,7 @@ app.use(cors());
 // Connect to the database
 connectDB();
 
-app.get('/', (req, res) => {
+app.get('/my-orders', (req, res) => {
     res.send('welcome to the backend server!');
 });
 
@@ -33,6 +34,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/orders', orderRoutes);
 
 
 app.listen(PORT, () => {
