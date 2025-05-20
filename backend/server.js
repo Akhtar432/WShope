@@ -10,6 +10,9 @@ const productRoutes = require("./routes/productRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const checkoutRoutes = require("./routes/checkoutRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
+const subscriberRouter = require('./routes/subscriberRouter');
+const adminRoutes = require('./routes/adminRoutes');
 
 dotenv.config();
 
@@ -35,6 +38,11 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/subscribe', subscriberRouter);
+
+// Admin routes
+app.use('/api/admin/users', adminRoutes);
 
 
 app.listen(PORT, () => {
