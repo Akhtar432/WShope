@@ -1,2 +1,24 @@
+# Node modules
+node_modules/
+.npm
+.pnpm
+.yarn-integrity
+
+# Environment variables
 .env
-/node_modules
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Build output
+dist/
+build/
+out/
+
+# Cache
+.cache/
+
+
+
+
