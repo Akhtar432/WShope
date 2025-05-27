@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import registerImg from "../assets/register.webp";
-import { register as registerUser } from "../redux/slices/authSlice"; 
+import { register as registerUser } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 
 function Register() {
@@ -11,7 +11,6 @@ function Register() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,7 +23,10 @@ function Register() {
   return (
     <div className="flex">
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-8 md:p-12">
-        <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-8 rounded-lg border shadow-sm">
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-md bg-white p-8 rounded-lg border shadow-sm"
+        >
           <div className="flex justify-center mb-6">
             <h2 className="text-xl font-medium">Wshope</h2>
           </div>
