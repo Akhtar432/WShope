@@ -20,32 +20,32 @@ import Users from "./components/Admin/Users";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Toaster position="top-right-side" />
-      <Routes>
-        <Route path="/" element={<UserLayout />}>
-          <Route index element={<Home />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="collections/:collection" element={<Collection />} />
-          <Route path="product/:id" element={<ProductDetails />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="order-confirmation" element={<OrderConfirmation />} />
-          <Route path="order/:id" element={<OrderDetailsPage />} />
-          <Route path="my-orders" element={<MyOrdersPage />} />
-          <Route path="*" element={<h1>404 Not Found</h1>} />
-        </Route>
-        <Route path="admin" element={<AdminLayout />}>
-          {/*Admin layout */}
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="users" element={<Users />} />
-          <Route index element={<Dashboard />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+      <BrowserRouter>
+        <Toaster position="top-right-side" />
+        <Routes>
+          <Route path="/" element={<UserLayout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="collections/:collection" element={<Collection />} />
+            <Route path="product/:id" element={<ProductDetails />} />
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="order-confirmation" element={<OrderConfirmation />} />
+            <Route path="order/:id" element={<OrderDetailsPage />} />
+            <Route path="my-orders" element={<MyOrdersPage />} />
+            <Route path="*" element={<h1>404 Not Found</h1>} />
+          </Route>
+          <Route path="admin" element={<AdminLayout />}>
+            {/*Admin layout */}
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="products" element={<Products />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="users" element={<Users />} />
+            <Route index element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
   );
 }
 

@@ -1,16 +1,22 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import registerImg from "../assets/register.webp";
+import { register as registerUser } from "../redux/slices/authSlice"; 
+import { useDispatch } from "react-redux";
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log("User Registered:", {name, email, password});
-    }
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("User Registered:", { name, email, password });
+    // Dispatch the register action
+    dispatch(registerUser({ name, email, password }));
+  };
 
   return (
     <div className="flex">
@@ -46,7 +52,7 @@ function Register() {
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">Password</label>
             <input
-              type="email"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded"
