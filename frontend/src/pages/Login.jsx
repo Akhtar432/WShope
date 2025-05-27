@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import loginImg from '../assets/login.webp'
 import {login as loginUser } from "../redux/slices/authSlice"; 
+
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Login form submitted with:", { email, password });
     dispatch(loginUser({ email, password }));
+    navigate("/"); 
   };
 
   return (
@@ -51,7 +54,7 @@ function Login() {
             type="submit"
             className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition"
           >
-            Sign In
+            Login
           </button>
           <p className="mt-6 text-center text-sm">
             Don't have an account? 
