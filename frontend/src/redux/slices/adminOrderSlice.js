@@ -17,9 +17,9 @@ export const fetchAllOrders = createAsyncThunk("adminOrder/fetchAllOrders", asyn
     }
 });
 // Async thunk to update order status
-export const updateOrderStatus = createAsyncThunk("adminOrder/updateOrderStatus", async ({ orderId, status }, { rejectWithValue }) => {
+export const updateOrderStatus = createAsyncThunk("adminOrder/updateOrderStatus", async ({ id, status }, { rejectWithValue }) => {
     try {
-        const response = await axios.put(`http://localhost:9000/api/admin/orders/${orderId}`, { status }, {
+        const response = await axios.put(`http://localhost:9000/api/admin/orders/${id}`, { status }, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             },
@@ -32,9 +32,9 @@ export const updateOrderStatus = createAsyncThunk("adminOrder/updateOrderStatus"
     }
 });
 // Async thunk to delete an order
-export const deleteOrder = createAsyncThunk("adminOrder/deleteOrder", async (orderId, { rejectWithValue }) => {
+export const deleteOrder = createAsyncThunk("adminOrder/deleteOrder", async (id, { rejectWithValue }) => {
     try {
-        const response = await axios.delete(`http://localhost:9000/api/admin/orders/${orderId}`, {
+        const response = await axios.delete(`http://localhost:9000/api/admin/orders/${id}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("userToken")}`,
             },
