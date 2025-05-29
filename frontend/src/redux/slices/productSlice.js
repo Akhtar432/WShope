@@ -37,8 +37,8 @@ export const fetchProductsByFilters = createAsyncThunk(
 );
 
 // Async thunk to fetch a single product by ID
-export const fetchProductById = createAsyncThunk(
-  "products/fetchProductsDetails",
+export const fetchProductDetails = createAsyncThunk(
+  "products/fetchProductDetails",
   async (id) => {
     const response = await axios.get(`http://localhost:9000/api/products/${id}`);
     return response.data;
@@ -67,13 +67,7 @@ export const fetchSimilarProducts = createAsyncThunk(
   "products/fetchSimilarProducts",
   async (id) => {
     const response = await axios.get(
-      `http://localhost:9000/api/products/similar/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        }
-      }
-    );
+      `http://localhost:9000/api/products/similar/${id}`);
     return response.data;
   }
 );
@@ -103,22 +97,22 @@ const productSlice = createSlice({
   },
   reducers: {
     setFilters: (state, action) => {
-        state.filters = { ...state.filters, ...action.payload };
+      state.filters = { ...state.filters, ...action.payload };
     },
     clearFilters: (state) => {
-        state.filters = {
-            category: "",
-            size: "",
-            color: "",
-            gender: "",
-            material: "",
-            brand: "",
-            minPrice: "",
-            maxPrice: "",
-            sortBy: "",
-            search: "",
-            limit: ""
-        };
+      state.filters = {
+        category: "",
+        size: "",
+        color: "",
+        gender: "",
+        material: "",
+        brand: "",
+        minPrice: "",
+        maxPrice: "",
+        sortBy: "",
+        search: "",
+        limit: ""
+      };
     }
   },
   extraReducers: (builder) => {
@@ -127,17 +121,17 @@ const productSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchProductsByFilters.fulfilled, (state, action) => {
-        state.status = "succeeded";
         state.products = action.payload;
+        state.loading = false;
       })
       .addCase(fetchProductsByFilters.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
-      .addCase(fetchProductById.pending, (state) => {
+      .addCase(fetchProductDetails.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchProductById.fulfilled, (state, action) => {
+      .addCase(fetchProductDetails.fulfilled, (state, action) => {
         state.status = "succeeded";
         const product = action.payload;
         const existingProduct = state.products.find(p => p._id === product._id);
@@ -147,7 +141,7 @@ const productSlice = createSlice({
           state.products.push(product);
         }
       })
-      .addCase(fetchProductById.rejected, (state, action) => {
+      .addCase(fetchProductDetails.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
@@ -170,8 +164,8 @@ const productSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchSimilarProducts.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.similarProducts = action.payload;
+        state.similarProducts = action.payload; 
+        state.loading = false;
       })
       .addCase(fetchSimilarProducts.rejected, (state, action) => {
         state.status = "failed";

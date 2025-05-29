@@ -2,97 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
-const newArrivals = [
-  {
-    _id: "1",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=1",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "2",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=2",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "3",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=3",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "4",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=4",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "5",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=5",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "6",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=6",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "7",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=7",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-  {
-    _id: "8",
-    name: "Stylish Jocket",
-    price: 120,
-    image: [
-      {
-        url: "https://picsum.photos/200?random=8",
-        altText: "Stylish Jocket",
-      },
-    ],
-  },
-];
-
 function NewArrivals() {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -117,19 +26,6 @@ function NewArrivals() {
     }
   };
 
-  // Add scroll event listener
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (container) {
-      container.addEventListener("scroll", updateScrollButtons);
-      updateScrollButtons(); // Initialize button states
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener("scroll", updateScrollButtons);
-      }
-    };
-  }, []);
 
   // Drag-to-scroll functionality
   const handleMouseDown = (e) => {
@@ -149,6 +45,38 @@ function NewArrivals() {
   const handleMouseUpOrLeave = () => {
     setIsDragging(false);
   };
+
+  // Fetch new arrivals data
+  const [newArrivals, setNewArrivals] = useState([]);
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      try {
+        const response = await fetch("http://localhost:9000/api/products/new-arrivals");
+        const data = await response.json();
+        setNewArrivals(data.newArrivals || []);
+      } catch (error) {
+        console.error("Error fetching new arrivals:", error);
+      }
+    };
+
+    fetchNewArrivals();
+  }, []);
+
+
+  // Add scroll event listener
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (container) {
+      container.addEventListener("scroll", updateScrollButtons);
+      updateScrollButtons(); // Initialize button states
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", updateScrollButtons);
+      }
+    };
+  }, []);
+
 
   return (
     <section className="py-2 px-2 lg:px-0">
@@ -190,14 +118,14 @@ function NewArrivals() {
         onMouseLeave={handleMouseUpOrLeave}
       >
         <div className="inline-flex space-x-6">
-          {newArrivals.map((product) => (
+          {newArrivals?.map((product) => (
             <div
               key={product._id}
               className="min-w-[200px] sm:min-w-[250px] lg:min-w-[300px] relative inline-block"
             >
               <img
-                src={product.image[0]?.url}
-                alt={product.image[0]?.altText || product.name}
+                src={product.images[0]?.url}
+                alt={product.images[0]?.altText || product.name}
                 className="w-full h-auto rounded-lg"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-opacity-50 backdrop-blur-md text-white p-4 rounded-b-lg">

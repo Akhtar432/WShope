@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Async thunk All orders
@@ -66,11 +66,14 @@ const adminOrderSlice = createSlice({
             .addCase(fetchAllOrders.fulfilled, (state, action) => {
                 state.loading = false;
                 state.orders = action.payload;
+                state.totalOrders = action.payload.length;
+                state.totalSales = action.payload.reduce((total, order) => total + order.totalPrice, 0)
             })
             .addCase(fetchAllOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
+
             .addCase(updateOrderStatus.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -81,11 +84,13 @@ const adminOrderSlice = createSlice({
                 if (index !== -1) {
                     state.orders[index] = action.payload;
                 }
+                state.totalSales = state.orders.reduce((total, order) => total + order.totalPrice, 0);
             })
             .addCase(updateOrderStatus.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
+
             .addCase(deleteOrder.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -93,6 +98,8 @@ const adminOrderSlice = createSlice({
             .addCase(deleteOrder.fulfilled, (state, action) => {
                 state.loading = false;
                 state.orders = state.orders.filter(order => order._id !== action.payload._id);
+                state.totalOrders = state.orders.length;
+                state.totalSales = state.orders.reduce((total, order) => total + order.totalPrice, 0);
             })
             .addCase(deleteOrder.rejected, (state, action) => {
                 state.loading = false;
