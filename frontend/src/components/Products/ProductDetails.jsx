@@ -11,13 +11,14 @@ import {
 } from "../../redux/slices/productSlice";
 
 function ProductDetails({ productId }) {
+
   const { id } = useParams();
   const dispatch = useDispatch();
   const { 
     selectedProduct, 
     loading, 
     error, 
-    similarProducts 
+    similarProducts = [] 
   } = useSelector((state) => state.products);
   const { user, guestId } = useSelector((state) => state.auth);
   
@@ -33,6 +34,7 @@ function ProductDetails({ productId }) {
     if (productFetchId) {
       dispatch(fetchProductDetails(productFetchId));
       dispatch(fetchSimilarProducts(productFetchId));
+      
     }
   }, [dispatch, productFetchId]);
 
@@ -123,13 +125,13 @@ function ProductDetails({ productId }) {
             </h1>
             
             <div className="flex items-center mb-4">
-              {selectedProduct.originalPrice && (
+              {typeof selectedProduct.originalPrice === "number" && (
                 <span className="text-lg text-gray-500 line-through mr-2">
                   ${selectedProduct.originalPrice.toFixed(2)}
                 </span>
               )}
               <span className="text-xl font-bold text-gray-900">
-                ${selectedProduct.price.toFixed(2)}
+                {typeof selectedProduct.price === "number" ? `$${selectedProduct.price.toFixed(2)}` : "N/A"}
               </span>
             </div>
 

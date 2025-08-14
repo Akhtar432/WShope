@@ -32,7 +32,7 @@ export const fetchProductsByFilters = createAsyncThunk(
     if (limit) query.append("limit", limit);
 
     const response = await axios.get(`http://localhost:9000/api/products/?${query.toString()}`);
-    return response.data;
+    return response.data.products || response.data; // ✅ ensure array format
   }
 );
 
@@ -41,7 +41,7 @@ export const fetchProductDetails = createAsyncThunk(
   "products/fetchProductDetails",
   async (id) => {
     const response = await axios.get(`http://localhost:9000/api/products/${id}`);
-    return response.data;
+    return response.data.product; // ✅ return only product object
   }
 );
 
@@ -58,7 +58,7 @@ export const updateProduct = createAsyncThunk(
         }
       }
     );
-    return response.data;
+    return response.data.product || response.data; // ✅ updated product
   }
 );
 
@@ -68,7 +68,7 @@ export const fetchSimilarProducts = createAsyncThunk(
   async (id) => {
     const response = await axios.get(
       `http://localhost:9000/api/products/similar/${id}`);
-    return response.data;
+    return response.data.similarProducts || response.data;
   }
 );
 
@@ -121,7 +121,7 @@ const productSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchProductsByFilters.fulfilled, (state, action) => {
-        state.products = action.payload;
+        state.products = Array.isArray(action.payload) ? action.payload : [];
         state.loading = false;
       })
       .addCase(fetchProductsByFilters.rejected, (state, action) => {
@@ -134,12 +134,16 @@ const productSlice = createSlice({
       .addCase(fetchProductDetails.fulfilled, (state, action) => {
         state.status = "succeeded";
         const product = action.payload;
+        if (!Array.isArray(state.products)) {
+          state.products = [];
+        }
         const existingProduct = state.products.find(p => p._id === product._id);
         if (existingProduct) {
           Object.assign(existingProduct, product);
         } else {
           state.products.push(product);
         }
+        state.selectedProduct = product;
       })
       .addCase(fetchProductDetails.rejected, (state, action) => {
         state.status = "failed";
@@ -164,7 +168,7 @@ const productSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchSimilarProducts.fulfilled, (state, action) => {
-        state.similarProducts = action.payload; 
+        state.similarProducts = Array.isArray(action.payload) ? action.payload : [];
         state.loading = false;
       })
       .addCase(fetchSimilarProducts.rejected, (state, action) => {

@@ -16,8 +16,10 @@ function Home() {
     loading,
     error,
   } = useSelector((state) => state.products);
+
   const [bestSellerProduct, setBestSellerProduct] = useState(null);
   const [bestSellerLoading, setBestSellerLoading] = useState(true);
+
 
   useEffect(() => {
     dispatch(

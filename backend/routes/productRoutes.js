@@ -1,7 +1,7 @@
 const express = require('express');
 const Product = require('../models/productModel');
 const { protect, admin } = require('../middleware/authMiddleware');
-const { collection } = require('../models/userModel');
+
 
 const router = express.Router();
 
