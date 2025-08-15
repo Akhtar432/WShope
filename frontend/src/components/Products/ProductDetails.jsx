@@ -42,13 +42,17 @@ function ProductDetails({ productId }) {
     if (selectedProduct?.images?.length > 0) {
       setMainImage(selectedProduct.images[0].url);
       // Set default selections
-      if (selectedProduct.color?.length) {
-        setSelectedColor(selectedProduct.color[0]);
+      if (selectedProduct.colors?.length) {
+        setSelectedColor(selectedProduct.colors[0]);
       }
       if (selectedProduct.sizes?.length) {
         setSelectedSize(selectedProduct.sizes[0]);
       }
     }
+  }, [selectedProduct]);
+
+  useEffect(() => {
+    console.log("Selected product changed:", selectedProduct);
   }, [selectedProduct]);
 
   const handleQuantityChange = (action) => {
@@ -139,9 +143,9 @@ function ProductDetails({ productId }) {
 
             {/* Color Selection */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Color</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Colors</h3>
               <div className="flex flex-wrap gap-2">
-                {selectedProduct.color?.map(color => (
+                {selectedProduct.colors?.map(color => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -157,7 +161,7 @@ function ProductDetails({ productId }) {
 
             {/* Size Selection */}
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Size</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-2">Sizes</h3>
               <div className="flex flex-wrap gap-2">
                 {selectedProduct.sizes?.map(size => (
                   <button
