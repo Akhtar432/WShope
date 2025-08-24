@@ -51,9 +51,9 @@ function ProductDetails({ productId }) {
     }
   }, [selectedProduct]);
 
-  useEffect(() => {
-    console.log("Selected product changed:", selectedProduct);
-  }, [selectedProduct]);
+  // useEffect(() => {
+  //   console.log("Selected product changed:", selectedProduct);
+  // }, [selectedProduct]);
 
   const handleQuantityChange = (action) => {
     if (action === "minus" && quantity > 1) {
@@ -82,13 +82,13 @@ function ProductDetails({ productId }) {
       })
     )
       .unwrap()
-      .then(() => toast.success("Added to cart!"))
+      .then(() => toast.success("Product added to cart!", {duration: 1000}))
       .catch(err => toast.error(err.message))
       .finally(() => setIsButtonDisabled(false));
   };
 
   if (loading) return <div className="text-center py-8">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+  if (error) return <div className="text-center text-red-500 py-8">Error: {error}</div>;
   if (!selectedProduct) return <div className="text-center py-8">Product not found</div>;
 
   return (
