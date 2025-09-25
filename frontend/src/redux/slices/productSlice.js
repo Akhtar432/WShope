@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+// Async thunk to fetch products by filters
 export const fetchProductsByFilters = createAsyncThunk(
   "products/fetchByFilters",
   async ({
@@ -31,7 +32,9 @@ export const fetchProductsByFilters = createAsyncThunk(
     if (category) query.append("category", category);
     if (limit) query.append("limit", limit);
 
-    const response = await axios.get(`http://localhost:9000/api/products/?${query.toString()}`);
+    const response = await axios.get(
+      `http://localhost:9000/api/products/?${query.toString()}`
+    );
     return response.data.products || response.data; // ✅ ensure array format
   }
 );
@@ -40,7 +43,9 @@ export const fetchProductsByFilters = createAsyncThunk(
 export const fetchProductDetails = createAsyncThunk(
   "products/fetchProductDetails",
   async (id) => {
-    const response = await axios.get(`http://localhost:9000/api/products/${id}`);
+    const response = await axios.get(
+      `http://localhost:9000/api/products/${id}`
+    );
     return response.data.product; // ✅ return only product object
   }
 );
@@ -55,7 +60,7 @@ export const updateProduct = createAsyncThunk(
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        }
+        },
       }
     );
     return response.data.product || response.data; // ✅ updated product
@@ -67,7 +72,8 @@ export const fetchSimilarProducts = createAsyncThunk(
   "products/fetchSimilarProducts",
   async (id) => {
     const response = await axios.get(
-      `http://localhost:9000/api/products/similar/${id}`);
+      `http://localhost:9000/api/products/similar/${id}`
+    );
     return response.data.similarProducts || response.data;
   }
 );
@@ -92,8 +98,8 @@ const productSlice = createSlice({
       maxPrice: "",
       sortBy: "",
       search: "",
-      limit: ""
-    }
+      limit: "",
+    },
   },
   reducers: {
     setFilters: (state, action) => {
@@ -111,23 +117,28 @@ const productSlice = createSlice({
         maxPrice: "",
         sortBy: "",
         search: "",
-        limit: ""
+        limit: "",
       };
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
+      // fetchProductsByFilters
       .addCase(fetchProductsByFilters.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchProductsByFilters.fulfilled, (state, action) => {
-        state.products = Array.isArray(action.payload) ? action.payload : [];
+        state.products = Array.isArray(action.payload)
+          ? action.payload
+          : [];
         state.loading = false;
       })
       .addCase(fetchProductsByFilters.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
+
+      // fetchProductDetails
       .addCase(fetchProductDetails.pending, (state) => {
         state.status = "loading";
       })
@@ -137,7 +148,9 @@ const productSlice = createSlice({
         if (!Array.isArray(state.products)) {
           state.products = [];
         }
-        const existingProduct = state.products.find(p => p._id === product._id);
+        const existingProduct = state.products.find(
+          (p) => p._id === product._id
+        );
         if (existingProduct) {
           Object.assign(existingProduct, product);
         } else {
@@ -149,13 +162,17 @@ const productSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+
+      // updateProduct
       .addCase(updateProduct.pending, (state) => {
         state.status = "loading";
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
         state.status = "succeeded";
         const updatedProduct = action.payload;
-        const existingProductIndex = state.products.findIndex(p => p._id === updatedProduct._id);
+        const existingProductIndex = state.products.findIndex(
+          (p) => p._id === updatedProduct._id
+        );
         if (existingProductIndex !== -1) {
           state.products[existingProductIndex] = updatedProduct;
         }
@@ -164,19 +181,23 @@ const productSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+
+      // fetchSimilarProducts
       .addCase(fetchSimilarProducts.pending, (state) => {
         state.status = "loading";
       })
       .addCase(fetchSimilarProducts.fulfilled, (state, action) => {
-        state.similarProducts = Array.isArray(action.payload) ? action.payload : [];
+        state.similarProducts = Array.isArray(action.payload)
+          ? action.payload
+          : [];
         state.loading = false;
       })
       .addCase(fetchSimilarProducts.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
-  }
+  },
 });
 
-export const productActions = productSlice.actions;
+export const { setFilters, clearFilters } = productSlice.actions;
 export const productsReducer = productSlice.reducer;
