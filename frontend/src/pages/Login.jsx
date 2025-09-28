@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react"; 
+import { useDispatch, useSelector } from "react-redux"; 
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import loginImg from '../assets/login.webp'
-import {login as loginUser } from "../redux/slices/authSlice"; 
-
+import { login as loginUser } from "../redux/slices/authSlice"; 
+import { mergeCarts } from "../redux/slices/cartSlice";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,12 +11,30 @@ function Login() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, guestId } = useSelector((state) => state.auth);
+  const { cart } = useSelector((state) => state.cart);
+
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const isCheckoutRedirect = redirect.includes("checkout");
+
+  useEffect(() => {
+    if (user?.products?.length > 0 && guestId) { // optional chaining added for safety
+      dispatch(mergeCarts({ guestId, user }))
+        .then(() => {
+          navigate(isCheckoutRedirect ? "/checkout" : "/");
+        });
+    } else if (user) { // navigate only if user exists
+      navigate(isCheckoutRedirect ? "/checkout" : "/");
+    }
+  }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login form submitted with:", { email, password });
-    dispatch(loginUser({ email, password }));
-    navigate("/"); 
+    dispatch(loginUser({ email, password }))
+      .then(() => {
+        navigate(redirect);
+      });
   };
 
   return (
@@ -38,6 +56,7 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full p-2 border rounded"
               placeholder="Enter your email address"
+              required
             />
           </div>
           <div className="mb-4">
@@ -48,6 +67,7 @@ function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-2 border rounded"
               placeholder="Enter your password"
+              required
             />
           </div>
           <button
@@ -58,7 +78,7 @@ function Login() {
           </button>
           <p className="mt-6 text-center text-sm">
             Don't have an account? 
-            <Link to="/register" className="text-blue-500">
+            <Link to={`/register?/redirect=${encodeURIComponent(redirect)}`} className="text-blue-500">
               Register
             </Link>
           </p>
@@ -66,7 +86,7 @@ function Login() {
       </div>
       <div className="hidden md:block w-1/2 bg-gray-800">
         <div className="h-full flex flex-col justify-center items-center">
-            <img src={loginImg} alt="Login" className="h-[750px] w-full object-cover" />
+          <img src={loginImg} alt="Login" className="h-[750px] w-full object-cover" />
         </div>
       </div>
     </div>

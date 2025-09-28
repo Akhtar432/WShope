@@ -7,6 +7,10 @@ function CartContent({ cart, userId, guestId }) {
   const dispatch = useDispatch();
   const cartItems = cart?.products || [];
 
+  if (!cartItems || cartItems.length === 0) {
+    return <p className="text-center text-gray-500">Your cart is empty</p>;
+  }
+
   const handleIncrease = (item) => {
     dispatch(
       updateCartItem({
@@ -47,9 +51,6 @@ function CartContent({ cart, userId, guestId }) {
     );
   };
 
-  if (!cartItems || cartItems.length === 0) {
-    return <p className="text-center text-gray-500">Your cart is empty</p>;
-  }
 
   return (
     <div>
