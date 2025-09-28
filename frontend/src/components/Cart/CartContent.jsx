@@ -1,15 +1,11 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { RiDeleteBin3Line } from "react-icons/ri";
-import {
-  selectCartItems,
-  updateCartItem,
-  removeFromCart,
-} from "../../redux/slices/cartSlice";
+import { updateCartItem, removeFromCart } from "../../redux/slices/cartSlice";
 
-function CartContent() {
+function CartContent({ cart, userId, guestId }) {
   const dispatch = useDispatch();
-  const cartItems = useSelector(selectCartItems);
+  const cartItems = cart?.products || [];
 
   const handleIncrease = (item) => {
     dispatch(
@@ -18,8 +14,8 @@ function CartContent() {
         size: item.size,
         color: item.color,
         quantity: item.quantity + 1,
-        userId: item.userId,
-        guestId: item.guestId,
+        userId,
+        guestId,
       })
     );
   };
@@ -32,8 +28,8 @@ function CartContent() {
           size: item.size,
           color: item.color,
           quantity: item.quantity - 1,
-          userId: item.userId,
-          guestId: item.guestId,
+          userId,
+          guestId,
         })
       );
     }
@@ -45,8 +41,8 @@ function CartContent() {
         productId: item.productId,
         size: item.size,
         color: item.color,
-        userId: item.userId,
-        guestId: item.guestId,
+        userId,
+        guestId,
       })
     );
   };
@@ -90,8 +86,9 @@ function CartContent() {
               </div>
             </div>
           </div>
+
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-            <p className="font-medium">$ {product.price.toLocaleString()}</p>
+            <p className="font-medium">$ {(product.price * product.quantity).toLocaleString()}</p>
             <button onClick={() => handleRemove(product)}>
               <RiDeleteBin3Line className="h-5 w-5 text-red-600" />
             </button>

@@ -51,10 +51,6 @@ function ProductDetails({ productId }) {
     }
   }, [selectedProduct]);
 
-  // useEffect(() => {
-  //   console.log("Selected product changed:", selectedProduct);
-  // }, [selectedProduct]);
-
   const handleQuantityChange = (action) => {
     if (action === "minus" && quantity > 1) {
       setQuantity(prev => prev - 1);
@@ -81,7 +77,6 @@ function ProductDetails({ productId }) {
         userId: user?._id,
       })
     )
-      .unwrap()
       .then(() => toast.success("Product added to cart!", {duration: 1000}))
       .catch(err => toast.error(err.message))
       .finally(() => setIsButtonDisabled(false));

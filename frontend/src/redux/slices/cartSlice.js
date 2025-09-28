@@ -20,16 +20,23 @@ const saveCartToStorage = (cart) => {
   }
 };
 
+// Normalize backend response
+const normalizeCartResponse = (data) => {
+  if (data?.cart) return data.cart; // backend sends { success, cart }
+  return data; // backend sends cart directly
+};
+
 // Async Thunks
 export const fetchCart = createAsyncThunk(
   'cart/fetchCart',
   async ({ userId, guestId }, { rejectWithValue }) => {
     try {
       const response = await axios.get('http://localhost:9000/api/cart', {
-        params: { userId, guestId }
+        params: { userId, guestId },
       });
-      saveCartToStorage(response.data.cart);
-      return response.data.cart;
+      const cart = normalizeCartResponse(response.data);
+      saveCartToStorage(cart);
+      return cart;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch cart');
     }
@@ -38,23 +45,27 @@ export const fetchCart = createAsyncThunk(
 
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ productId, quantity, size, color, userId, guestId }, { rejectWithValue }) => {
+  async ({ productId, quantity, size, color, userId, guestId, token }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:9000/api/cart', {
-        productId,
-        quantity,
-        size,
-        color,
-        userId,
-        guestId
-      });
-      saveCartToStorage(response.data.cart);
-      return response.data.cart;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const response = await axios.post(
+        'http://localhost:9000/api/cart',
+        { productId, quantity, size, color, userId, guestId },
+        config
+      );
+      const cart = normalizeCartResponse(response.data);
+      saveCartToStorage(cart);
+      return cart;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to add to cart');
     }
   }
 );
+
 
 export const updateCartItem = createAsyncThunk(
   'cart/updateCartItem',
@@ -66,10 +77,11 @@ export const updateCartItem = createAsyncThunk(
         size,
         color,
         userId,
-        guestId
+        guestId,
       });
-      saveCartToStorage(response.data.cart);
-      return response.data.cart;
+      const cart = normalizeCartResponse(response.data);
+      saveCartToStorage(cart);
+      return cart;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to update cart');
     }
@@ -81,10 +93,11 @@ export const removeFromCart = createAsyncThunk(
   async ({ productId, size, color, userId, guestId }, { rejectWithValue }) => {
     try {
       const response = await axios.delete('http://localhost:9000/api/cart', {
-        data: { productId, size, color, userId, guestId }
+        data: { productId, size, color, userId, guestId },
       });
-      saveCartToStorage(response.data.cart);
-      return response.data.cart;
+      const cart = normalizeCartResponse(response.data);
+      saveCartToStorage(cart);
+      return cart;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to remove from cart');
     }
@@ -96,13 +109,12 @@ export const mergeCarts = createAsyncThunk(
   async ({ guestId }, { getState, rejectWithValue }) => {
     try {
       const { user } = getState().auth;
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-      
+      if (!user) throw new Error('User not authenticated');
+
       const response = await axios.post('http://localhost:9000/api/cart/merge', { guestId });
-      saveCartToStorage(response.data.cart);
-      return response.data.cart;
+      const cart = normalizeCartResponse(response.data);
+      saveCartToStorage(cart);
+      return cart;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to merge carts');
     }
@@ -116,7 +128,7 @@ const cartSlice = createSlice({
     cart: getCartFromStorage(),
     status: 'idle',
     loading: false,
-    error: null
+    error: null,
   },
   reducers: {
     clearCart: (state) => {
@@ -128,7 +140,7 @@ const cartSlice = createSlice({
         state.cart.guestId = action.payload;
         saveCartToStorage(state.cart);
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -162,53 +174,29 @@ const cartSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(updateCartItem.pending, (state) => {
-        state.status = 'loading';
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(updateCartItem.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.loading = false;
         state.cart = action.payload;
-      })
-      .addCase(updateCartItem.rejected, (state, action) => {
-        state.status = 'failed';
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(removeFromCart.pending, (state) => {
-        state.status = 'loading';
-        state.loading = true;
-        state.error = null;
       })
       .addCase(removeFromCart.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.loading = false;
         state.cart = action.payload;
       })
-      .addCase(removeFromCart.rejected, (state, action) => {
-        state.status = 'failed';
-        state.loading = false;
-        state.error = action.payload;
-      })
       .addCase(mergeCarts.fulfilled, (state, action) => {
         state.cart = action.payload;
-      })
-        .addCase(mergeCarts.rejected, (state, action) => {
-            state.error = action.payload;
-        });
-  }
+      });
+  },
 });
+
 export const { clearCart, setGuestId } = cartSlice.actions;
+
 // Selectors
 export const selectCart = (state) => state.cart.cart;
 export const selectCartItems = (state) => state.cart.cart?.products || [];
-export const selectCartStatus = (state) => state.cart.status;
-export const selectCartError = (state) => state.cart.error;
-export const selectCartTotal = (state) => 
-  state.cart.cart?.totalPrice || 0;
-export const selectCartItemCount = (state) => 
+export const selectCartTotal = (state) => state.cart.cart?.totalPrice || 0;
+export const selectCartItemCount = (state) =>
   state.cart.cart?.products?.reduce((count, item) => count + item.quantity, 0) || 0;
 export const selectGuestId = (state) => state.cart.cart?.guestId;
 

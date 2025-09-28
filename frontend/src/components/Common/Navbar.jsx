@@ -8,10 +8,14 @@ import {
 import SearchBar from "./SearchBar";
 import CartDrawer from "../Layout/CartDrawer";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const {cart} = useSelector((state) => state.cart);
+
+  const cartItemCount = cart?.products.reduce((total, product) => total + product.quantity, 0) || 0;
 
   const toggleCartDrawer = () => {
     setDrawerOpen(!drawerOpen);
@@ -75,9 +79,12 @@ function Navbar() {
             className="relative hover:text-black"
           >
             <HiOutlineShoppingBag className="h-6 w-6" />
-            <span className="absolute -top-1 bg-[#ea2e0e] text-white text-xs rounded-full px-2 py-0.5">
-              0
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 bg-[#ea2e0e] text-white text-xs rounded-full px-2 py-0.5">
+              {cartItemCount}
             </span>
+            )}
+            
           </button>
 
           {/* Search */}
