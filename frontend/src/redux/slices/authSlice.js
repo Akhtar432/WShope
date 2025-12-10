@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Retrieve the user info and token from localStorage if available
-const userFromStorage = localStorage.getItem("user") 
+// Retrieve the user info from localStorage if available
+const userFromStorage = localStorage.getItem("user")
   ? JSON.parse(localStorage.getItem("user"))
   : null;
 
-// Check for an existing guest ID in localStorage or generate a new one
-const initialGuestId = localStorage.getItem("guestId") || `guest_${Date.now()}`;
+// Guest ID (for guest cart)
+const initialGuestId =
+  localStorage.getItem("guestId") || `guest_${Date.now()}`;
 
 // Initial state
 const initialState = {
@@ -17,14 +18,18 @@ const initialState = {
   error: null,
 };
 
-// Async thunk for login
 export const login = createAsyncThunk(
   "/api/users/login",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:9000/api/users/login", userData);
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-      localStorage.setItem("userToken", JSON.stringify(response.data.token));
+      const response = await axios.post(
+        "http://localhost:9000/api/users/login",
+        userData
+      );
+
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("userToken", response.data.token);
+
       return response.data.user;
     } catch (error) {
       return rejectWithValue(
@@ -34,14 +39,18 @@ export const login = createAsyncThunk(
   }
 );
 
-// Async thunk for Register
 export const register = createAsyncThunk(
   "/api/users/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:9000/api/users/register", userData);
-      localStorage.setItem("userInfo", JSON.stringify(response.data.user));
-      localStorage.setItem("userToken", JSON.stringify(response.data.token));
+      const response = await axios.post(
+        "http://localhost:9000/api/users/register",
+        userData
+      );
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      localStorage.setItem("userToken", response.data.token);
+
       return response.data.user;
     } catch (error) {
       return rejectWithValue(
@@ -51,7 +60,6 @@ export const register = createAsyncThunk(
   }
 );
 
-// Create auth slice
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -59,14 +67,18 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       localStorage.removeItem("user");
+      localStorage.removeItem("userToken");
     },
+
     setGuestId: (state, action) => {
       state.guestId = action.payload;
       localStorage.setItem("guestId", action.payload);
     },
   },
+
   extraReducers: (builder) => {
     builder
+      // LOGIN
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -79,6 +91,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // REGISTER
       .addCase(register.pending, (state) => {
         state.loading = true;
         state.error = null;

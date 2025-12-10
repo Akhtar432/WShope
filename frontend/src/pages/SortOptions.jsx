@@ -9,27 +9,29 @@ function SortOptions() {
     const selectedOption = e.target.value;
     setSortOption(selectedOption);
 
-    // Update the URL with the selected sort option
     if (selectedOption) {
-      searchParams.set("sort", selectedOption);
+      searchParams.set("sortBy", selectedOption);
     } else {
-      searchParams.delete("sort");
+      searchParams.delete("sortBy");
     }
+
     setSearchParams(searchParams);
   };
 
   return (
     <div className="mb-4 flex items-center justify-end">
       <select
-        id="short"
+        id="sort"
         className="border p-2 rounded focus:outline-none"
         value={sortOption}
         onChange={handleSortChange}
       >
         <option value="">Default</option>
-        <option value="priceAcs">Price: Low to High</option>
-        <option value="PriceDesc">Price: High to Low</option>
-        <option value="Popularity">Popularity</option>
+
+        {/* Correct values according to backend */}
+        <option value="priceAsc">Price: Low to High</option>
+        <option value="priceDesc">Price: High to Low</option>
+        <option value="popularity">Popularity</option>
       </select>
     </div>
   );

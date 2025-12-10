@@ -88,7 +88,8 @@ function CartContent({ cart, userId, guestId }) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 
+           sm:gap-2">
             <p className="font-medium">$ {(product.price * product.quantity).toLocaleString()}</p>
             <button onClick={() => handleRemove(product)}>
               <RiDeleteBin3Line className="h-5 w-5 text-red-600" />

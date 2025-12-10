@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { HiMagnifyingGlass, HiMiniXMark } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchProductsByFilters } from "../../redux/slices/productSlice";
-import {setFilters} from '../../redux/slices/productSlice'
+import { fetchProductsByFilters, setFilters } from "../../redux/slices/productSlice";
 
 function SearchBar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,16 +10,21 @@ function SearchBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-
   const handleSearchToggle = () => {
     setIsOpen(!isOpen);
   };
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
-    dispatch(setFilters({search: searchTerm}));
-    dispatch(fetchProductsByFilters({search: setSearchTerm}));
-    navigate(`/collections/all?search=${searchTerm}`)
+
+    if (!searchTerm.trim()) return;
+
+    dispatch(setFilters({ search: searchTerm }));
+
+    dispatch(fetchProductsByFilters({ search: searchTerm }));
+
+    navigate(`/collections/all?search=${searchTerm}`);
+
     setIsOpen(false);
   };
 
@@ -33,7 +37,7 @@ function SearchBar() {
       {isOpen ? (
         <form
           onSubmit={handleSubmitForm}
-          className="relative flex items-center justify-center w-full "
+          className="relative flex items-center justify-center w-full"
         >
           <div className="relative w-2/3">
             <input
@@ -43,7 +47,8 @@ function SearchBar() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-gray-100 px-4 py-2 pl-2 pr-12 rounded-lg focus:outline-none w-full placeholder:text-gray-700"
             />
-            {/* Search Icon */}
+
+            {/* Search Button */}
             <button
               type="submit"
               aria-label="Search"
@@ -51,11 +56,12 @@ function SearchBar() {
             >
               <HiMagnifyingGlass className="h-6 w-6" />
             </button>
+
             {/* Close Button */}
             <button
               type="button"
               onClick={handleSearchToggle}
-              aria-label="Close search"
+              aria-label="Close"
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600"
             >
               <HiMiniXMark className="h-6 w-6" />
