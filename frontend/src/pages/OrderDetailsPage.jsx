@@ -1,42 +1,19 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
+import {fetchOrderDetails} from '../redux/slices/orderSlice'
 
 function OrderDetailsPage() {
   const { id } = useParams();
-  const [orderDetails, setOrderDetails] = React.useState(null);
+  const dispatch = useDispatch();
+  const {orderDetails, loading, error} = useSelector((state)=> state.orders);
 
   useEffect(() => {
-    const mockOrderDetails = {
-      _id: id,
-      createdAt: new Date(),
-      isPaid: true,
-      isDelivered: false,
-      paymentMethod: 'PayPal',
-      shippingAddress: { 
-        address: '123 Main St',
-        city: 'New York', 
-        postalCode: '10001',
-        country: 'USA' 
-      },
-      orderItems: [
-        {
-          productId: '1',
-          name: 'Jacket',
-          price: 29.99,
-          quantity: 1,
-          image: 'https://picsum.photos/150?random=0',
-        },
-        {
-          productId: '2',
-          name: 'Shirt',
-          price: 39.99,
-          quantity: 2,
-          image: 'https://picsum.photos/150?random=2',
-        },
-      ],
-    };
-    setOrderDetails(mockOrderDetails);
-  }, [id]);  
+    dispatch(fetchOrderDetails(id));
+  },[dispatch,id]);
+
+  if (loading) return <p>Loading...</p>
+  if(error) return <p>Error:{error}</p>
 
   // Calculate total price
   const totalPrice = orderDetails?.orderItems.reduce(

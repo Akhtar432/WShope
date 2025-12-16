@@ -1,42 +1,7 @@
-import React from "react";
-
-const checkout = {
-  _id: "12323",
-  createdAt: new Date(),
-  checkoutItems: [
-    {
-      productId: "1",
-      name: "Premium Jacket",
-      color: "Black",
-      size: "M",
-      price: "150",
-      quantity: 1,
-      image: "https://picsum.photos/150?random=1",
-    },
-    {
-      productId: "2",
-      name: "Cotton T-shirt",
-      color: "Black",
-      size: "L",
-      price: "120",
-      quantity: 1,
-      image: "https://picsum.photos/150?random=2",
-    },
-  ],
-  shippingAddress: {
-    fullName: "John Doe",
-    address: "123 Fashion Street",
-    city: "New York",
-    state: "NY",
-    postalCode: "10001",
-    country: "USA",
-  },
-  paymentMethod: "Visa ending in 4242",
-  subtotal: 270,
-  shippingFee: 15,
-  tax: 24.3,
-  total: 309.3,
-};
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { clearCart } from "../redux/slices/cartSlice";
 
 function OrderConfirmation() {
   const formatDate = (date) => {
@@ -47,6 +12,19 @@ function OrderConfirmation() {
       day: 'numeric',
     });
   };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const {checkout} = useSelector((state) => state.checkout);
+  // Clear the cart when the order is confirmed
+  useEffect(() => {
+    if(checkout && checkout._id) {
+      dispatch((clearCart()));
+      localStorage.removeItem("cart");
+    }
+    else{
+      navigate("/my-orders")
+    }
+  }, [checkout, dispatch, navigate])
 
   const calculatedEstimateDelivery = (createdAt) => {
     const orderDate = new Date(createdAt);

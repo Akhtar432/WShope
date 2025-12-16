@@ -1,100 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserOrders } from '../redux/slices/orderSlice';
 
 function MyOrdersPage() {
 
-    const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {orders, loading, error} = useSelector((state) => state.orders)
 
-    useEffect(() => {
-        setTimeout(() => {
-            const mockOrders = [
-                {
-                    _id: "12343",
-                    createdAt: new Date(),
-                    shippingAddress: {city: "New York", country: "USA"},
-                    orderItems: [
-                        {
-                            name:"Product 1",
-                            image: "https://picsum.photos/200?random=12",
-                        }
-                    ],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-                {
-                    _id: "43123",
-                    createdAt: new Date(),
-                    shippingAddress: {city: "New York", country: "USA"},
-                    orderItems: [
-                        {
-                            name:"Product 2",
-                            image: "https://picsum.photos/200?random=13",
-                        }
-                    ],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-                {
-                    _id: "431234",
-                    createdAt: new Date(),
-                    shippingAddress: {city: "New Zeland", country: "USA"},
-                    orderItems: [
-                        {
-                            name:"Product 3",
-                            image: "https://picsum.photos/200?random=14",
-                        }
-                    ],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-                {
-                    _id: "12343",
-                    createdAt: new Date(),
-                    shippingAddress: {city: "New York", country: "USA"},
-                    orderItems: [
-                        {
-                            name:"Product 1",
-                            image: "https://picsum.photos/200?random=12",
-                        }
-                    ],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-                {
-                    _id: "43123",
-                    createdAt: new Date(),
-                    shippingAddress: {city: "New York", country: "USA"},
-                    orderItems: [
-                        {
-                            name:"Product 2",
-                            image: "https://picsum.photos/200?random=13",
-                        }
-                    ],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-                {
-                    _id: "431234",
-                    createdAt: new Date(),
-                    shippingAddress: {city: "New Zeland", country: "USA"},
-                    orderItems: [
-                        {
-                            name:"Product 3",
-                            image: "https://picsum.photos/200?random=14",
-                        }
-                    ],
-                    totalPrice: 100,
-                    isPaid: true
-                },
-            ];
-            setOrders(mockOrders);
-        }, 1000)
-    }, []);
-
+    useEffect(() =>{
+      dispatch(fetchUserOrders());
+    }, [dispatch])
+  
     const handleRowClick = (orderId) => {
         navigate(`/order/${orderId}`);
     };
+
+    if(loading) return <p>Loading...</p>
+    if(error) return <p>Error: {error}</p>
 
   return (
     <div className='relative shadow-md sm:rounded-lg overflow-hidden'>
